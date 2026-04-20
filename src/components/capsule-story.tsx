@@ -33,6 +33,39 @@ export function CapsuleStory({ athleteId }: { athleteId: string }) {
     return () => window.clearTimeout(timeoutId);
   }, [athlete.id]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadEntries = async () => {
+      try {
+        const response = await fetch(`/api/journals?athleteId=${athlete.id}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const payload = (await response.json()) as {
+          entries?: { extrait: string }[];
+          source?: string;
+        };
+
+        const excerpts =
+          payload.entries
+            ?.map((entry) => entry.extrait)
+            .filter((value) => Boolean(value)) ?? [];
+
+        if (excerpts.length > 0) {
+          setEntriesCount(excerpts.length);
+          setStory(getCapsuleForAthlete(athlete.id, excerpts));
+        }
+      } catch {
+        // Local fallback already covers the page.
+      }
+    };
+
+    void loadEntries();
+
+    return () => controller.abort();
+  }, [athlete.id]);
+
   async function regenerate() {
     setIsLoading(true);
 

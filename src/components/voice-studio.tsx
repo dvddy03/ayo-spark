@@ -23,6 +23,7 @@ export function VoiceStudio() {
   const [journal, setJournal] = useState(voiceSamples[0].text);
   const [analysis, setAnalysis] = useState<VoiceAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [saveLabel, setSaveLabel] = useState("Local demo");
   const currentAthlete = useMemo(
     () => athleteById[athleteId] ?? athleteById[DEMO_ATHLETE_ID],
     [athleteId],
@@ -58,6 +59,30 @@ export function VoiceStudio() {
       localStorage.setItem(
         JOURNAL_STORAGE_KEY,
         JSON.stringify([nextEntry, ...existing].slice(0, 8)),
+      );
+
+      const saveResponse = await fetch("/api/journals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          athleteId,
+          transcription: journal,
+          langueDetectee: currentAthlete.langueNative,
+          analysis: data,
+          jourJOJ: 3,
+        }),
+      });
+
+      const savePayload = (await saveResponse.json()) as {
+        saved?: boolean;
+        source?: string;
+      };
+      setSaveLabel(
+        savePayload.saved && savePayload.source === "supabase"
+          ? "Sauvegarde Supabase"
+          : "Local demo",
       );
     } finally {
       setIsLoading(false);
@@ -165,6 +190,9 @@ export function VoiceStudio() {
           {analysis
             ? `Journal associe a ${currentAthlete.nom}, ${currentAthlete.sport}.`
             : "Lancez une analyse pour construire la carte emotionnelle et generer un extrait fort."}
+        </p>
+        <p className="mt-2 text-xs uppercase tracking-[0.22em] text-white/45">
+          Source de sauvegarde : {saveLabel}
         </p>
 
         {analysis ? (

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@/lib/anthropic";
 import { athleteById, getCapsuleForAthlete } from "@/lib/mock-data";
+import {
+  createSupabaseAdminClient,
+  hasSupabaseAdminEnv,
+  isMissingTableError,
+} from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
@@ -9,8 +14,30 @@ export async function POST(request: NextRequest) {
   };
 
   const athleteId = body.athleteId ?? "a4";
-  const excerpts = body.journalExcerpts ?? [];
+  let excerpts = body.journalExcerpts ?? [];
   const athlete = athleteById[athleteId] ?? athleteById.a4;
+
+  if (excerpts.length === 0 && hasSupabaseAdminEnv()) {
+    try {
+      const supabase = createSupabaseAdminClient();
+      const { data, error } = await supabase
+        .from("audio_entries")
+        .select("extrait_fort")
+        .eq("athlete_id", athleteId)
+        .order("created_at", { ascending: false })
+        .limit(8);
+
+      if (!error) {
+        excerpts = (data ?? [])
+          .map((row) => row.extrait_fort as string | null)
+          .filter((value): value is string => Boolean(value));
+      } else if (!isMissingTableError(error)) {
+        excerpts = body.journalExcerpts ?? [];
+      }
+    } catch {
+      excerpts = body.journalExcerpts ?? [];
+    }
+  }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({

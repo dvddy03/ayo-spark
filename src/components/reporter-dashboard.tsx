@@ -6,26 +6,38 @@ import {
   athleteById,
   detectSuggestions,
   sparks,
+  type Spark,
 } from "@/lib/mock-data";
 
 type StatusMap = Record<string, string>;
 
 export function ReporterDashboard() {
+  const [items, setItems] = useState<Spark[]>(sparks);
   const [statuses, setStatuses] = useState<StatusMap>({});
 
   useEffect(() => {
     const sync = () => setStatuses(readStatuses());
     const timeoutId = window.setTimeout(sync, 0);
+    const load = async () => {
+      const response = await fetch("/api/sparks", { cache: "no-store" });
+      const payload = (await response.json()) as { sparks?: Spark[] };
+      setItems(payload.sparks ?? sparks);
+    };
+    void load();
+    const intervalId = window.setInterval(() => {
+      void load();
+    }, 12000);
     window.addEventListener("storage", sync);
     return () => {
       window.clearTimeout(timeoutId);
+      window.clearInterval(intervalId);
       window.removeEventListener("storage", sync);
     };
   }, []);
 
   const cards = useMemo(
     () =>
-      sparks.map((spark) => ({
+      items.map((spark) => ({
         ...spark,
         statut: (statuses[spark.id] ?? spark.statut) as
           | "pending"
@@ -33,7 +45,7 @@ export function ReporterDashboard() {
           | "declined"
           | "completed",
       })),
-    [statuses],
+    [items, statuses],
   );
 
   const hotStory = cards.find(

@@ -7,30 +7,59 @@ import {
   getFlagEmoji,
   getSparkTypeLabel,
   sparks,
+  type Spark,
 } from "@/lib/mock-data";
 
 type StatusMap = Record<string, "pending" | "accepted" | "declined" | "completed">;
 
 export function SparksBoard() {
+  const [items, setItems] = useState<Spark[]>(sparks);
   const [statuses, setStatuses] = useState<StatusMap>({});
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
+    const sync = async () => {
       setStatuses(readStatuses());
+      setItems(await loadSparks());
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      void sync();
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  function updateStatus(id: string, statut: StatusMap[string]) {
+  async function updateStatus(id: string, statut: StatusMap[string]) {
     const next = { ...statuses, [id]: statut };
     setStatuses(next);
     localStorage.setItem(SPARK_STATUS_STORAGE_KEY, JSON.stringify(next));
+
+    try {
+      const response = await fetch("/api/sparks", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, statut }),
+      });
+
+      const payload = (await response.json()) as {
+        spark?: Spark | null;
+      };
+
+      if (payload.spark) {
+        setItems((current) =>
+          current.map((spark) => (spark.id === payload.spark?.id ? payload.spark : spark)),
+        );
+      }
+    } catch {
+      // Local fallback is already applied above.
+    }
   }
 
   return (
     <div className="grid gap-5 xl:grid-cols-3">
-      {sparks.map((spark) => {
+      {items.map((spark) => {
         const athlete1 = athleteById[spark.athlete1Id];
         const athlete2 = athleteById[spark.athlete2Id];
         const currentStatus = statuses[spark.id] ?? spark.statut;
@@ -129,6 +158,16 @@ export function SparksBoard() {
       })}
     </div>
   );
+}
+
+async function loadSparks() {
+  try {
+    const response = await fetch("/api/sparks", { cache: "no-store" });
+    const payload = (await response.json()) as { sparks?: Spark[] };
+    return payload.sparks ?? sparks;
+  } catch {
+    return sparks;
+  }
 }
 
 function readStatuses(): StatusMap {
