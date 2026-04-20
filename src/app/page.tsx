@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DemoSignIn } from "@/components/demo-sign-in";
 import { PageShell } from "@/components/page-shell";
 import { athletes, getFlagEmoji, quickLinks } from "@/lib/mock-data";
 
@@ -15,12 +16,14 @@ export default function HomePage() {
   return (
     <PageShell
       eyebrow="Hackathon JOJ Innovation Challenge"
-      title="La premiere demo AYO SPARK, deployable tout de suite et utilisable meme sans toutes les APIs."
-      description="Cette version livre deja les 4 experiences cle du cahier des charges : journal emotionnel, connexions humaines, reporter mode et guide local. Les donnees mock et les fallbacks gardent la solution stable pour la scene, puis les integrations API peuvent monter progressivement."
+      title="AYO SPARK transforme une simple web app de demo en experience olympique, humaine et credible des la premiere minute."
+      description="Pour le jury, l'enjeu n'est pas seulement de voir des ecrans. Il faut sentir un vrai produit. Cette nouvelle entree ajoute une authentification de demonstration, des profils incarnes et une narration plus claire autour des 4 modules."
     >
+      <DemoSignIn />
+
       <section className="grid gap-5 lg:grid-cols-[1.2fr,0.8fr]">
         <div className="glass-card rounded-[28px] p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-gold">Probleme</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-gold">Proposition</p>
           <h2 className="mt-2 text-3xl font-semibold">
             2 700 athletes. 206 pays. 13 jours. Personne ne se parle vraiment.
           </h2>
@@ -34,13 +37,13 @@ export default function HomePage() {
               href="/athlete"
               className="rounded-full bg-gold px-5 py-3 text-sm font-semibold text-[#091522]"
             >
-              Ouvrir la demo athlete
+              Voir le parcours athlete
             </Link>
             <Link
               href="/reporter"
               className="rounded-full border border-white/10 px-5 py-3 text-sm text-white/75"
             >
-              Voir le dashboard reporter
+              Voir le parcours reporter
             </Link>
           </div>
         </div>

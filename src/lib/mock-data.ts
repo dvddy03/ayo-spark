@@ -46,6 +46,15 @@ export type QuickSuggestion = {
   accent: "gold" | "green" | "cyan" | "orange" | "purple" | "red";
 };
 
+export type DemoAccessProfile = {
+  id: string;
+  role: "athlete" | "reporter" | "guide";
+  label: string;
+  description: string;
+  pitch: string;
+  route: string;
+};
+
 export const APP_NAME = "AYO SPARK";
 export const DEMO_ATHLETE_ID = "a4";
 export const JOURNAL_STORAGE_KEY = "ayo-spark-journals";
@@ -184,6 +193,45 @@ export const quickLinks: QuickSuggestion[] = [
     description: "Tableau de bord pour les histoires fortes et briefings d'interview.",
     href: "/reporter",
     accent: "cyan",
+  },
+];
+
+export const demoAccessProfiles: DemoAccessProfile[] = [
+  {
+    id: "a4",
+    role: "athlete",
+    label: "Hassan Omar",
+    description: "Profil athlete prioritaire pour la demo emotionnelle et le Spark Teranga.",
+    pitch:
+      "Le meilleur parcours jury pour montrer la resilience, la connexion humaine et la capsule finale.",
+    route: "/athlete",
+  },
+  {
+    id: "a1",
+    role: "athlete",
+    label: "Amara Diallo",
+    description: "Profil athlete local pour montrer la fierte de Dakar 2026.",
+    pitch:
+      "Une bonne alternative si vous voulez un angle Senegal, famille et pression positive.",
+    route: "/athlete",
+  },
+  {
+    id: "reporter-young",
+    role: "reporter",
+    label: "Young Reporter CIO",
+    description: "Role dedie a l'observation des sparks et a la detection des histoires fortes.",
+    pitch:
+      "Ideal pour la minute 4 de la demo, lorsque le jury voit l'alerte story apparaitre.",
+    route: "/reporter",
+  },
+  {
+    id: "guide-volunteer",
+    role: "guide",
+    label: "Benevole Jambaar26",
+    description: "Role utilitaire pour lancer rapidement le guide local et la traduction.",
+    pitch:
+      "Parfait pour montrer la valeur terrain de l'app avant de revenir aux athletes.",
+    route: "/guide",
   },
 ];
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SessionBadge } from "@/components/session-badge";
 import { APP_NAME } from "@/lib/mock-data";
 
 const navItems = [
@@ -33,17 +34,20 @@ export function PageShell({
               JOJ Dakar 2026 demo web app
             </p>
           </div>
-          <nav className="flex flex-wrap gap-2 text-sm text-white/70">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-full border border-white/8 px-4 py-2 transition hover:border-gold/40 hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <nav className="flex flex-wrap gap-2 text-sm text-white/70">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-full border border-white/8 px-4 py-2 transition hover:border-gold/40 hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <SessionBadge />
+          </div>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-5 py-8 md:px-8 md:py-10">
