@@ -1,65 +1,97 @@
-import Image from "next/image";
+import Link from "next/link";
+import { PageShell } from "@/components/page-shell";
+import { athletes, getFlagEmoji, quickLinks } from "@/lib/mock-data";
 
-export default function Home() {
+const accentClass: Record<string, string> = {
+  gold: "text-gold border-gold/18 bg-gold/10",
+  green: "text-green border-green/18 bg-green/10",
+  cyan: "text-cyan border-cyan/18 bg-cyan/10",
+  orange: "text-orange border-orange/18 bg-orange/10",
+  purple: "text-purple border-purple/18 bg-purple/10",
+  red: "text-red border-red/18 bg-red/10",
+};
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <PageShell
+      eyebrow="Hackathon JOJ Innovation Challenge"
+      title="La premiere demo AYO SPARK, deployable tout de suite et utilisable meme sans toutes les APIs."
+      description="Cette version livre deja les 4 experiences cle du cahier des charges : journal emotionnel, connexions humaines, reporter mode et guide local. Les donnees mock et les fallbacks gardent la solution stable pour la scene, puis les integrations API peuvent monter progressivement."
+    >
+      <section className="grid gap-5 lg:grid-cols-[1.2fr,0.8fr]">
+        <div className="glass-card rounded-[28px] p-6 md:p-8">
+          <p className="text-xs uppercase tracking-[0.28em] text-gold">Probleme</p>
+          <h2 className="mt-2 text-3xl font-semibold">
+            2 700 athletes. 206 pays. 13 jours. Personne ne se parle vraiment.
+          </h2>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-white/74">
+            AYO SPARK rend visibles les emotions, provoque les bonnes rencontres, aide les
+            reporters a trouver les histoires fortes et accompagne les athletes dans Dakar,
+            Diamniadio et Saly.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/athlete"
+              className="rounded-full bg-gold px-5 py-3 text-sm font-semibold text-[#091522]"
+            >
+              Ouvrir la demo athlete
+            </Link>
+            <Link
+              href="/reporter"
+              className="rounded-full border border-white/10 px-5 py-3 text-sm text-white/75"
+            >
+              Voir le dashboard reporter
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="glass-card rounded-[28px] p-6">
+          <p className="text-xs uppercase tracking-[0.28em] text-cyan">Profils demo</p>
+          <div className="mt-4 grid gap-3">
+            {athletes.map((athlete) => (
+              <div
+                key={athlete.id}
+                className="rounded-[24px] border border-white/8 bg-white/4 p-4"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-semibold">{athlete.nom}</p>
+                    <p className="mt-1 text-sm text-white/60">
+                      {getFlagEmoji(athlete.codePays)} {athlete.pays} - {athlete.sport}
+                    </p>
+                  </div>
+                  {athlete.estRefugie ? (
+                    <span className="rounded-full bg-green/12 px-3 py-2 text-xs uppercase tracking-[0.18em] text-green">
+                      Refugees
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-3 text-sm leading-7 text-white/72">
+                  {athlete.emotionPrincipale}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {quickLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="glass-card rounded-[28px] p-6 transition hover:-translate-y-1"
+          >
+            <span
+              className={`inline-flex rounded-full border px-3 py-2 text-xs uppercase tracking-[0.22em] ${accentClass[link.accent] ?? accentClass.gold}`}
+            >
+              {link.title}
+            </span>
+            <p className="mt-4 text-xl font-semibold">{link.title}</p>
+            <p className="mt-3 text-sm leading-7 text-white/72">{link.description}</p>
+          </Link>
+        ))}
+      </section>
+    </PageShell>
   );
 }
