@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   SPARK_STATUS_STORAGE_KEY,
+  type Athlete,
   athleteById,
   detectSuggestions,
   sparks,
@@ -13,15 +14,25 @@ type StatusMap = Record<string, string>;
 
 export function ReporterDashboard() {
   const [items, setItems] = useState<Spark[]>(sparks);
+  const [athletesMap, setAthletesMap] = useState<Record<string, Athlete>>(athleteById);
   const [statuses, setStatuses] = useState<StatusMap>({});
 
   useEffect(() => {
     const sync = () => setStatuses(readStatuses());
     const timeoutId = window.setTimeout(sync, 0);
     const load = async () => {
-      const response = await fetch("/api/sparks", { cache: "no-store" });
-      const payload = (await response.json()) as { sparks?: Spark[] };
-      setItems(payload.sparks ?? sparks);
+      const [sparksResponse, athletesResponse] = await Promise.all([
+        fetch("/api/sparks", { cache: "no-store" }),
+        fetch("/api/athletes", { cache: "no-store" }),
+      ]);
+
+      const sparksPayload = (await sparksResponse.json()) as { sparks?: Spark[] };
+      const athletesPayload = (await athletesResponse.json()) as {
+        athletes?: Athlete[];
+      };
+
+      setItems(sparksPayload.sparks ?? sparks);
+      setAthletesMap(buildAthletesMap(athletesPayload.athletes));
     };
     void load();
     const intervalId = window.setInterval(() => {
@@ -59,8 +70,8 @@ export function ReporterDashboard() {
         <h2 className="mt-2 text-2xl font-semibold">Flux temps reel</h2>
         <div className="mt-5 grid gap-4">
           {cards.map((spark) => {
-            const athlete1 = athleteById[spark.athlete1Id];
-            const athlete2 = athleteById[spark.athlete2Id];
+            const athlete1 = resolveAthlete(athletesMap, spark.athlete1Id);
+            const athlete2 = resolveAthlete(athletesMap, spark.athlete2Id);
             return (
               <div key={spark.id} className="rounded-3xl border border-white/8 bg-white/4 p-4">
                 <div className="flex items-start justify-between gap-4">
@@ -97,7 +108,8 @@ export function ReporterDashboard() {
           <div className="mt-5 rounded-[28px] border border-red/25 bg-red/10 p-5">
             <p className="text-xs uppercase tracking-[0.28em] text-red">Histoire detectee</p>
             <h3 className="mt-3 text-xl font-semibold">
-              {athleteById[hotStory.athlete1Id].nom} et {athleteById[hotStory.athlete2Id].nom}
+              {resolveAthlete(athletesMap, hotStory.athlete1Id).nom} et{" "}
+              {resolveAthlete(athletesMap, hotStory.athlete2Id).nom}
             </h3>
             <p className="mt-3 text-sm leading-7 text-white/80">
               Un Spark Teranga a ete accepte. Le lien commun est deja tres fort et merite un
@@ -155,4 +167,32 @@ function readStatuses(): StatusMap {
   } catch {
     return {};
   }
+}
+
+function buildAthletesMap(athletes?: Athlete[]) {
+  if (!athletes || athletes.length === 0) {
+    return athleteById;
+  }
+
+  return Object.fromEntries(athletes.map((athlete) => [athlete.id, athlete]));
+}
+
+function resolveAthlete(
+  athletesMap: Record<string, Athlete>,
+  athleteId: string,
+): Athlete {
+  return (
+    athletesMap[athleteId] ?? {
+      id: athleteId,
+      slug: athleteId,
+      nom: "Athlete inconnu",
+      pays: "Inconnu",
+      codePays: "RF",
+      sport: "Sport inconnu",
+      langueNative: "fr",
+      type: "athlete",
+      positionActuelle: "Diamniadio",
+      emotionPrincipale: "Profil indisponible",
+    }
+  );
 }

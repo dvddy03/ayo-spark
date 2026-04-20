@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   SPARK_STATUS_STORAGE_KEY,
+  type Athlete,
   athleteById,
   getFlagEmoji,
   getSparkTypeLabel,
@@ -14,12 +15,18 @@ type StatusMap = Record<string, "pending" | "accepted" | "declined" | "completed
 
 export function SparksBoard() {
   const [items, setItems] = useState<Spark[]>(sparks);
+  const [athletesMap, setAthletesMap] = useState<Record<string, Athlete>>(athleteById);
   const [statuses, setStatuses] = useState<StatusMap>({});
 
   useEffect(() => {
     const sync = async () => {
       setStatuses(readStatuses());
-      setItems(await loadSparks());
+      const [nextSparks, nextAthletes] = await Promise.all([
+        loadSparks(),
+        loadAthletes(),
+      ]);
+      setItems(nextSparks);
+      setAthletesMap(buildAthletesMap(nextAthletes));
     };
 
     const timeoutId = window.setTimeout(() => {
@@ -60,8 +67,8 @@ export function SparksBoard() {
   return (
     <div className="grid gap-5 xl:grid-cols-3">
       {items.map((spark) => {
-        const athlete1 = athleteById[spark.athlete1Id];
-        const athlete2 = athleteById[spark.athlete2Id];
+        const athlete1 = resolveAthlete(athletesMap, spark.athlete1Id);
+        const athlete2 = resolveAthlete(athletesMap, spark.athlete2Id);
         const currentStatus = statuses[spark.id] ?? spark.statut;
         return (
           <article
@@ -170,6 +177,16 @@ async function loadSparks() {
   }
 }
 
+async function loadAthletes() {
+  try {
+    const response = await fetch("/api/athletes", { cache: "no-store" });
+    const payload = (await response.json()) as { athletes?: Athlete[] };
+    return payload.athletes ?? [];
+  } catch {
+    return [];
+  }
+}
+
 function readStatuses(): StatusMap {
   if (typeof window === "undefined") return {};
 
@@ -179,4 +196,32 @@ function readStatuses(): StatusMap {
   } catch {
     return {};
   }
+}
+
+function buildAthletesMap(athletes?: Athlete[]) {
+  if (!athletes || athletes.length === 0) {
+    return athleteById;
+  }
+
+  return Object.fromEntries(athletes.map((athlete) => [athlete.id, athlete]));
+}
+
+function resolveAthlete(
+  athletesMap: Record<string, Athlete>,
+  athleteId: string,
+): Athlete {
+  return (
+    athletesMap[athleteId] ?? {
+      id: athleteId,
+      slug: athleteId,
+      nom: "Athlete inconnu",
+      pays: "Inconnu",
+      codePays: "RF",
+      sport: "Sport inconnu",
+      langueNative: "fr",
+      type: "athlete",
+      positionActuelle: "Diamniadio",
+      emotionPrincipale: "Profil indisponible",
+    }
+  );
 }
