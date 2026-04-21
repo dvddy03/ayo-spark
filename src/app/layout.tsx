@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AYO SPARK",
   description:
-    "Plateforme de demo JOJ 2026 pour journal vocal, connexions humaines, reporter mode et guide local.",
+    "Plateforme JOJ 2026 pour journal vocal, connexions humaines, narration media et guide local.",
 };
 
 export default function RootLayout({

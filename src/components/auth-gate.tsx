@@ -22,7 +22,7 @@ export function AuthGate({
     return (
       <GateMessage
         title="Connexion requise"
-        description="Connectez-vous pour acceder a cet espace. Vous pouvez utiliser un compte email classique ou entrer comme invite si l'authentification anonyme est active dans Supabase."
+        description="Connectez-vous pour acceder a cet espace. Vous pouvez utiliser un compte email classique ou, si vous l'avez active dans Supabase, ouvrir une session anonyme."
       />
     );
   }

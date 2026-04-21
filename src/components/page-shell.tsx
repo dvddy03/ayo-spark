@@ -31,7 +31,7 @@ export function PageShell({
               {APP_NAME}
             </p>
             <p className="text-sm text-white/70">
-              JOJ Dakar 2026 demo web app
+              Plateforme athlete, guide et media JOJ Dakar 2026
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -67,11 +67,11 @@ export function PageShell({
             <div className="grid gap-3 rounded-3xl border border-white/8 bg-white/4 p-4">
               <div className="rounded-2xl border border-gold/20 bg-gold/10 p-4">
                 <p className="text-xs uppercase tracking-[0.3em] text-gold">
-                  Demo proof
+                  Continuite de service
                 </p>
                 <p className="mt-2 text-sm leading-7 text-white/80">
-                  Le MVP reste fonctionnel meme si une API externe tombe, grace
-                  aux donnees mock et aux fallbacks locaux.
+                  La plateforme reste utilisable meme si une API externe tombe,
+                  grace aux donnees de secours et aux fallbacks locaux.
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">

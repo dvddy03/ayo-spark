@@ -27,12 +27,12 @@ export function SessionBadge() {
     );
   }
 
-  const label = user.email ?? "invite";
+  const label = user.email ?? "session anonyme";
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="rounded-full border border-white/10 bg-white/4 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/72">
-        Connecte : {label}
+        Session : {label}
       </div>
       {pathname !== "/athlete" ? (
         <Link

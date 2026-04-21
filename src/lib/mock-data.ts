@@ -201,7 +201,7 @@ export const demoAccessProfiles: DemoAccessProfile[] = [
     id: "a4",
     role: "athlete",
     label: "Hassan Omar",
-    description: "Profil athlete prioritaire pour la demo emotionnelle et le Spark Teranga.",
+    description: "Profil athlete prioritaire pour le parcours emotionnel et le Spark Teranga.",
     pitch:
       "Le meilleur parcours jury pour montrer la resilience, la connexion humaine et la capsule finale.",
     route: "/athlete",
@@ -221,7 +221,7 @@ export const demoAccessProfiles: DemoAccessProfile[] = [
     label: "Young Reporter CIO",
     description: "Role dedie a l'observation des sparks et a la detection des histoires fortes.",
     pitch:
-      "Ideal pour la minute 4 de la demo, lorsque le jury voit l'alerte story apparaitre.",
+      "Ideal pour la minute 4 de la presentation, lorsque le jury voit l'alerte story apparaitre.",
     route: "/reporter",
   },
   {
@@ -440,12 +440,12 @@ export function getMockTranslation(
 
   const prefix =
     targetLang === "wo"
-      ? "Wolof demo"
+      ? "Wolof"
       : targetLang === "en"
-        ? "English demo"
+        ? "English"
         : targetLang === "fr"
-          ? "Francais demo"
-          : `${targetLang.toUpperCase()} demo`;
+          ? "Francais"
+          : targetLang.toUpperCase();
 
   return `${prefix}: ${text}`;
 }

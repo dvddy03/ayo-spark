@@ -10,17 +10,26 @@ import {
 import type { Session, User } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
+type AuthActionResult = {
+  error: string | null;
+  requiresEmailConfirmation?: boolean;
+};
+
 type AuthContextValue = {
   session: Session | null;
   user: User | null;
   isReady: boolean;
-  signInWithPassword: (email: string, password: string) => Promise<string | null>;
+  signInWithPassword: (
+    email: string,
+    password: string,
+  ) => Promise<AuthActionResult>;
   signUpWithPassword: (
     email: string,
     password: string,
     fullName?: string,
-  ) => Promise<string | null>;
-  signInAsGuest: () => Promise<string | null>;
+  ) => Promise<AuthActionResult>;
+  resendConfirmationEmail: (email: string) => Promise<string | null>;
+  signInAsGuest: () => Promise<AuthActionResult>;
   signOut: () => void;
 };
 
@@ -64,25 +73,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email,
           password,
         });
-        return error?.message ?? null;
+
+        return {
+          error: error?.message ?? null,
+          requiresEmailConfirmation: includesEmailConfirmationHint(error?.message),
+        };
       },
       async signUpWithPassword(email, password, fullName) {
         const supabase = getSupabaseBrowserClient();
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: fullName ?? "",
             },
+            emailRedirectTo: getEmailRedirectTo(),
           },
         });
+
+        return {
+          error: error?.message ?? null,
+          requiresEmailConfirmation:
+            !error && Boolean(data.user) && !data.session,
+        };
+      },
+      async resendConfirmationEmail(email) {
+        const supabase = getSupabaseBrowserClient();
+        const { error } = await supabase.auth.resend({
+          type: "signup",
+          email,
+          options: {
+            emailRedirectTo: getEmailRedirectTo(),
+          },
+        });
+
         return error?.message ?? null;
       },
       async signInAsGuest() {
         const supabase = getSupabaseBrowserClient();
         const { error } = await supabase.auth.signInAnonymously();
-        return error?.message ?? null;
+        return {
+          error: error?.message ?? null,
+        };
       },
       async signOut() {
         const supabase = getSupabaseBrowserClient();
@@ -103,4 +136,20 @@ export function useDemoAuth() {
   }
 
   return context;
+}
+
+function getEmailRedirectTo() {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return `${window.location.origin}/athlete`;
+}
+
+function includesEmailConfirmationHint(message?: string | null) {
+  if (!message) {
+    return false;
+  }
+
+  return message.toLowerCase().includes("email not confirmed");
 }

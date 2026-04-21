@@ -23,7 +23,7 @@ export function VoiceStudio() {
   const [journal, setJournal] = useState(voiceSamples[0].text);
   const [analysis, setAnalysis] = useState<VoiceAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [saveLabel, setSaveLabel] = useState("Local demo");
+  const [saveLabel, setSaveLabel] = useState("Sauvegarde locale");
   const currentAthlete = useMemo(
     () => athleteById[athleteId] ?? athleteById[DEMO_ATHLETE_ID],
     [athleteId],
@@ -82,7 +82,7 @@ export function VoiceStudio() {
       setSaveLabel(
         savePayload.saved && savePayload.source === "supabase"
           ? "Sauvegarde Supabase"
-          : "Local demo",
+          : "Sauvegarde locale",
       );
     } finally {
       setIsLoading(false);
@@ -98,7 +98,7 @@ export function VoiceStudio() {
               AYO VOICE
             </p>
             <h2 className="mt-2 text-2xl font-semibold">
-              Journal intime en mode demo texte
+              Journal intime en saisie texte
             </h2>
           </div>
           <div className="rounded-full border border-red/25 bg-red/10 px-4 py-2 text-sm text-white/80">
@@ -148,7 +148,7 @@ export function VoiceStudio() {
           <div className="mb-4 flex items-center gap-3">
             <div className="pulse-dot h-3 w-3 rounded-full bg-red" />
             <p className="text-sm text-white/72">
-              Ecrivez ou collez un journal pour simuler la transcription.
+              Ecrivez ou collez un journal pour alimenter l&apos;analyse emotionnelle.
             </p>
           </div>
           <textarea

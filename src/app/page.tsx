@@ -16,8 +16,8 @@ export default function HomePage() {
   return (
     <PageShell
       eyebrow="Hackathon JOJ Innovation Challenge"
-      title="AYO SPARK transforme une simple web app de demo en experience olympique, humaine et credible des la premiere minute."
-      description="Pour le jury, l'enjeu n'est pas seulement de voir des ecrans. Il faut sentir un vrai produit. Cette nouvelle entree ajoute une authentification de demonstration, des profils incarnes et une narration plus claire autour des 4 modules."
+      title="AYO SPARK transforme une simple web app en experience olympique, humaine et credible des la premiere minute."
+      description="Pour le jury, l'enjeu n'est pas seulement de voir des ecrans. Il faut sentir un vrai produit. Cette entree met en avant une authentification reelle, des profils incarnes et une narration claire autour des 4 modules."
     >
       <DemoSignIn />
 
@@ -49,7 +49,7 @@ export default function HomePage() {
         </div>
 
         <div className="glass-card rounded-[28px] p-6">
-          <p className="text-xs uppercase tracking-[0.28em] text-cyan">Profils demo</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-cyan">Profils phares</p>
           <div className="mt-4 grid gap-3">
             {athletes.map((athlete) => (
               <div

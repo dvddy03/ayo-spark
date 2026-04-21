@@ -6,39 +6,56 @@ import { useDemoAuth } from "@/components/auth-provider";
 
 export function DemoSignIn() {
   const router = useRouter();
-  const { signInAsGuest, signInWithPassword, signUpWithPassword, user } =
-    useDemoAuth();
+  const {
+    signInAsGuest,
+    signInWithPassword,
+    signUpWithPassword,
+    resendConfirmationEmail,
+    user,
+  } = useDemoAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
 
   async function handleSubmit() {
     setIsLoading(true);
     setFeedback(null);
+    setNeedsEmailConfirmation(false);
 
     try {
-      const error =
+      const result =
         mode === "signin"
           ? await signInWithPassword(email, password)
           : await signUpWithPassword(email, password, fullName);
 
-      if (error) {
-        setFeedback(error);
+      if (result.error) {
+        if (result.requiresEmailConfirmation) {
+          setNeedsEmailConfirmation(true);
+          setFeedback(
+            "Votre compte existe bien, mais l'email n'a pas encore ete confirme. Ouvrez votre boite mail puis cliquez sur le lien de validation.",
+          );
+          return;
+        }
+
+        setFeedback(result.error);
         return;
       }
 
-      setFeedback(
-        mode === "signup"
-          ? "Compte cree. Si votre projet exige une confirmation email, verifiez votre boite mail avant de revenir."
-          : "Connexion reussie. Redirection vers l'espace principal...",
-      );
-
-      if (mode === "signin") {
-        router.push("/athlete");
+      if (mode === "signup" && result.requiresEmailConfirmation) {
+        setNeedsEmailConfirmation(true);
+        setFeedback(
+          "Compte cree. Un email de confirmation vient d'etre envoye. Validez-le puis revenez vous connecter.",
+        );
+        return;
       }
+
+      setFeedback("Connexion reussie. Redirection vers l'espace principal...");
+
+      router.push("/athlete");
     } finally {
       setIsLoading(false);
     }
@@ -47,14 +64,34 @@ export function DemoSignIn() {
   async function handleGuest() {
     setIsLoading(true);
     setFeedback(null);
+    setNeedsEmailConfirmation(false);
 
     try {
-      const error = await signInAsGuest();
-      if (error) {
-        setFeedback(error);
+      const result = await signInAsGuest();
+      if (result.error) {
+        setFeedback(result.error);
         return;
       }
       router.push("/athlete");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleResendConfirmation() {
+    if (!email) {
+      setFeedback("Saisissez d'abord l'email utilise lors de l'inscription.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const error = await resendConfirmationEmail(email);
+      setFeedback(
+        error
+          ? error
+          : "Un nouvel email de confirmation vient d'etre envoye. Pensez aussi a verifier le dossier spam.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +110,7 @@ export function DemoSignIn() {
         </div>
         {user ? (
           <div className="rounded-full border border-green/20 bg-green/12 px-4 py-2 text-sm text-green">
-            Session active : {user.email ?? "invite"}
+            Session active : {user.email ?? "session anonyme"}
           </div>
         ) : null}
       </div>
@@ -83,8 +120,8 @@ export function DemoSignIn() {
           <p className="text-sm text-white/62">Choisissez un mode d&apos;acces</p>
           <div className="mt-4 grid gap-3">
             {([
-              ["signin", "Connexion", "Utilisez votre email et votre mot de passe pour entrer dans l'app."],
-              ["signup", "Inscription", "Creez un compte reel Supabase pour utiliser durablement l'application."],
+              ["signin", "Connexion", "Utilisez votre email et votre mot de passe pour entrer dans l'application."],
+              ["signup", "Inscription", "Creez votre compte utilisateur pour acceder durablement a la plateforme."],
             ] as const).map(([item, label, description]) => (
               <button
                 key={item}
@@ -151,7 +188,7 @@ export function DemoSignIn() {
               {mode === "signin" ? "Connexion utilisateur" : "Creation de compte"}
             </p>
             <p className="mt-3 text-sm leading-7 text-white/72">
-              Une fois connecte, vous accedez a la vraie application avec session Supabase.
+              Une fois connecte, vous accedez a la plateforme avec une vraie session Supabase.
             </p>
             {feedback ? (
               <div className="mt-4 rounded-2xl border border-white/8 bg-white/4 p-4 text-sm text-white/76">
@@ -170,12 +207,21 @@ export function DemoSignIn() {
                     ? "Se connecter"
                     : "Creer mon compte"}
               </button>
+              {needsEmailConfirmation ? (
+                <button
+                  onClick={handleResendConfirmation}
+                  disabled={isLoading || !email}
+                  className="rounded-full border border-cyan/20 bg-cyan/10 px-5 py-3 text-sm text-cyan transition hover:brightness-110 disabled:opacity-60"
+                >
+                  Renvoyer l&apos;email de confirmation
+                </button>
+              ) : null}
               <button
                 onClick={handleGuest}
                 disabled={isLoading}
                 className="rounded-full border border-white/10 px-5 py-3 text-sm text-white/72 transition hover:border-white/25 hover:text-white disabled:opacity-60"
               >
-                Continuer comme invite
+                Continuer sans compte
               </button>
             </div>
           </div>

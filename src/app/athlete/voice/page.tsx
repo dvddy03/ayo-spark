@@ -7,7 +7,7 @@ export default function VoicePage() {
     <PageShell
       eyebrow="Module 1 - AYO VOICE"
       title="Capture emotionnelle et extrait fort en moins d'une minute"
-      description="La version actuelle simule la transcription par saisie texte pour rester fiable sans bloquer le deploiement. Les analyses emotionnelles et la sauvegarde locale sont deja utilisables pour la demo."
+      description="La version actuelle utilise une saisie texte pour rester fiable sans bloquer le deploiement. Les analyses emotionnelles et la sauvegarde locale sont deja utilisables."
     >
       <VoiceStudio />
       <div className="flex justify-end">

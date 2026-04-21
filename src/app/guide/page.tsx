@@ -8,7 +8,7 @@ const modules = [
     title: "Interpreteur temps reel",
     accent: "text-orange",
     description:
-      "Traduire un message entre deux langues, avec support demo du wolof et historique local.",
+      "Traduire un message entre deux langues, avec support du wolof et historique local.",
   },
   {
     href: "/guide/chat",

@@ -43,11 +43,11 @@ export function AthleteOverview() {
             </span>
           </div>
           <p className="mt-4 text-sm leading-7 text-white/76">
-            Emotion cle : {athlete.emotionPrincipale}. Ce profil est ideal pour demonstrer
+            Emotion cle : {athlete.emotionPrincipale}. Ce profil met en valeur
             la puissance de Teranga Spark et de la Capsule Narrative.
           </p>
           <p className="mt-3 text-xs uppercase tracking-[0.18em] text-white/45">
-            Utilisateur connecte : {user?.email ?? "invite"}
+            Utilisateur connecte : {user?.email ?? "session anonyme"}
           </p>
         </div>
       </article>

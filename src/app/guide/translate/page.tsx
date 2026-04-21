@@ -6,7 +6,7 @@ export default function TranslatePage() {
     <PageShell
       eyebrow="AYO GUIDE - Interpreteur"
       title="Une conversation bilingue qui reste utilisable meme en mode fallback"
-      description="La traduction appelle Anthropic si la cle est presente, puis retombe automatiquement sur un comportement demo pour ne jamais bloquer l'utilisateur pendant le hackathon."
+      description="La traduction appelle Anthropic si la cle est presente, puis retombe automatiquement sur un comportement de secours pour ne jamais bloquer l'utilisateur."
     >
       <TranslatorDemo />
     </PageShell>
